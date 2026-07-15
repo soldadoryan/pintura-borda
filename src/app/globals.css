@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Pinta o fundo já no primeiro paint: sem isso o branco padrão do
+   navegador pisca antes do banner montar. */
+html,
+body {
+  background-color: var(--color-gray-950);
+}
+
+@keyframes hero-logo-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* fill-mode both mantém o estado inicial (opacity 0) durante o delay —
+   é o que segura o fundo escondido até a logo terminar. */
+@utility hero-logo-reveal {
+  animation-name: hero-logo-reveal;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+@utility hero-fade-in {
+  animation-name: hero-fade-in;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* A logo é um PNG com transparência, então text-shadow não a alcança: o
+   drop-shadow segue o alpha e a sombra acompanha o recorte real do desenho.
+   Duas camadas — uma curta pra destacar a borda, outra longa pra dar peso. */
+@utility hero-logo-shadow {
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.95))
+    drop-shadow(0 10px 28px rgb(0 0 0 / 0.85));
+}
+
+@keyframes gallery-slide-in {
+  from {
+    opacity: 0;
+    /* A direção do passo entra por variável: o JS só decide o sinal. */
+    transform: translateX(var(--gallery-slide-from));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Vale só para a foto que entra — a que sai é substituída na hora. O fade
+   partindo do fundo escuro do modal é o que disfarça a ausência da saída. */
+@utility gallery-slide-in {
+  animation: gallery-slide-in 350ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-reveal,
+  .hero-fade-in,
+  .gallery-slide-in {
+    animation: none;
+  }
+}
