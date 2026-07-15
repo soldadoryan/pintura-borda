@@ -14,8 +14,7 @@ export function Footer() {
         {/* Ano resolvido na build: a página é estática, então ele congela no
             deploy. É o bastante aqui, e evita mandar JS só pra isso. */}
         <p>
-          © {new Date().getFullYear()} {SITE.name}. Todos os direitos
-          reservados.
+          {new Date().getFullYear()} {SITE.name} © Todos os direitos reservados.
         </p>
 
         <p>
