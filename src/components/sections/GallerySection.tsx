@@ -5,17 +5,22 @@ import { useCallback, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import { GalleryModal } from "@/components/ui/GalleryModal";
+import { Reveal } from "@/components/ui/Reveal";
 import { RoundIconButton } from "@/components/ui/RoundIconButton";
 import { GALLERY } from "@/constants/gallery";
+import { revealDelay } from "@/constants/reveal";
 
 /**
  * Lado do quadrado, definido por breakpoint numa variável CSS. O min() é o que
  * segura os dois extremos: em tela baixa e larga quem manda é o vh, em tela
  * estreita e alta quem manda é o vw. Preso só em vh, como estava, o iPad em
  * retrato pedia 192% da largura da coluna e a foto nem cabia.
+ *
+ * De 1920px pra cima volta o 72vh original: lá a tela sempre deu conta, e o
+ * min() encolhia a foto 19% sem necessidade.
  */
 const SLIDE_SIZE_CLASS =
-  "[--slide-size:min(80vw,55vh)] lg:[--slide-size:min(58vh,44vw)]";
+  "[--slide-size:min(80vw,55vh)] lg:[--slide-size:min(58vh,44vw)] 3xl:[--slide-size:72vh]";
 
 /** O transform e o tamanho do <li> precisam ler o mesmo valor. */
 const SLIDE_SIZE = "var(--slide-size)";
@@ -39,7 +44,8 @@ const TOTAL = GALLERY.length;
 const SLIDES = [...GALLERY, ...GALLERY, ...GALLERY];
 
 /** Traz qualquer índice de volta para a faixa da cópia do meio. */
-const normalize = (index: number) => TOTAL + (((index % TOTAL) + TOTAL) % TOTAL);
+const normalize = (index: number) =>
+  TOTAL + (((index % TOTAL) + TOTAL) % TOTAL);
 
 export function GallerySection() {
   const [index, setIndex] = useState(TOTAL);
@@ -48,8 +54,6 @@ export function GallerySection() {
   const [isDragging, setIsDragging] = useState(false);
   const [withTransition, setWithTransition] = useState(true);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
-  // Só o modal usa isso: é de que lado a foto nova entra na animação.
-  const [zoomDirection, setZoomDirection] = useState(1);
   const dragStartX = useRef<number | null>(null);
   // Só marca que houve arrasto — nada aqui é lido durante a renderização.
   const didDrag = useRef(false);
@@ -131,7 +135,6 @@ export function GallerySection() {
   const closeZoom = useCallback(() => setZoomIndex(null), []);
 
   const stepZoom = useCallback((direction: number) => {
-    setZoomDirection(direction);
     setZoomIndex((current) =>
       current === null ? current : (current + direction + TOTAL) % TOTAL,
     );
@@ -145,17 +148,23 @@ export function GallerySection() {
     <section
       className={`w-full overflow-hidden bg-gray-950 lg:h-[80vh] ${SLIDE_SIZE_CLASS}`}
     >
-      <div className="grid h-full grid-cols-1 lg:grid-cols-2">
+      <Reveal className="grid h-full grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 pt-16 pb-10 sm:px-8 lg:py-0 lg:pl-16">
-          <h2 className="text-4xl font-bold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl xl:text-7xl">
+          <h2 className="reveal text-4xl font-bold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl xl:text-7xl">
             Nossas Pinturas
           </h2>
 
-          <p className="mt-6 max-w-lg text-lg text-pretty text-gray-400 sm:mt-8 sm:text-xl lg:text-2xl">
+          <p
+            style={revealDelay(1)}
+            className="reveal mt-6 max-w-lg text-lg text-gray-400 sm:mt-8 sm:text-xl lg:text-2xl"
+          >
             Além de livros, fazemos em cartões e outros materiais.
           </p>
 
-          <div className="mt-8 flex items-center gap-3 lg:mt-10">
+          <div
+            style={revealDelay(2)}
+            className="reveal mt-8 flex items-center gap-3 lg:mt-10"
+          >
             <RoundIconButton label="Foto anterior" onClick={() => goTo(-1)}>
               <FiChevronLeft aria-hidden className="size-6" />
             </RoundIconButton>
@@ -174,7 +183,13 @@ export function GallerySection() {
             tela, o corte do segundo quadrado continua acontecendo lá.
             O pl no empilhado alinha a foto com o texto de cima; no lg some,
             porque aí a coluna já começa no meio da tela. */}
-        <div className="flex h-full items-center overflow-hidden pb-16 pl-6 sm:pl-8 lg:pb-0 lg:pl-0">
+        {/* A entrada fica nesta coluna, e não na trilha lá dentro: a trilha tem
+            transform próprio pra se deslocar, e a animação o sobrescreveria —
+            o carrossel daria um pulo pra posição errada ao aparecer. */}
+        <div
+          style={revealDelay(3)}
+          className="reveal flex h-full items-center overflow-hidden pb-16 pl-6 sm:pl-8 lg:pb-0 lg:pl-0"
+        >
           <ul
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -187,8 +202,14 @@ export function GallerySection() {
             }}
             // touch-pan-y preserva o scroll vertical da página no celular:
             // sem isso o arrasto do carrossel engoliria o gesto.
+            // Enquanto arrasta, o grabbing precisa valer também por cima das
+            // fotos — elas são botões e, paradas, mostram o pointer da regra
+            // base. No meio do gesto o que está acontecendo é arrasto, não
+            // clique, e o cursor tem que dizer isso.
             className={`flex touch-pan-y gap-4 select-none ${
-              isDragging ? "cursor-grabbing" : "cursor-grab"
+              isDragging
+                ? "cursor-grabbing [&_button]:cursor-grabbing"
+                : "cursor-grab"
             } ${isAnimated ? "transition-transform duration-500 ease-out" : ""}`}
           >
             {SLIDES.map((photo, position) => (
@@ -201,8 +222,9 @@ export function GallerySection() {
                   type="button"
                   data-photo-index={position % TOTAL}
                   aria-label={`Ampliar: ${photo.alt}`}
-                  // Sem cursor próprio de propósito: o grab/grabbing da trilha
-                  // atravessa e o arrasto continua sendo o gesto anunciado.
+                  // O pointer vem da regra base: parada, a foto abre o modal, e
+                  // é isso que ela anuncia. Quem assume durante o arrasto é a
+                  // trilha, com o grabbing.
                   className="relative block size-full overflow-hidden rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500"
                 >
                   <Image
@@ -220,14 +242,9 @@ export function GallerySection() {
             ))}
           </ul>
         </div>
-      </div>
+      </Reveal>
 
-      <GalleryModal
-        index={zoomIndex}
-        direction={zoomDirection}
-        onClose={closeZoom}
-        onStep={stepZoom}
-      />
+      <GalleryModal index={zoomIndex} onClose={closeZoom} onStep={stepZoom} />
     </section>
   );
 }

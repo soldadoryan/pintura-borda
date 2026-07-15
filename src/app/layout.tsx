@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { Footer } from "@/components/ui/Footer";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { SITE } from "@/constants/site";
 import "./globals.css";
@@ -32,6 +33,9 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-gray-950 font-sans text-slate-50">
         {children}
+        {/* Fora do <main> de propósito: um <footer> aninhado dentro de main
+            perde o landmark de contentinfo e some da navegação por região. */}
+        <Footer />
         <WhatsAppButton />
       </body>
     </html>

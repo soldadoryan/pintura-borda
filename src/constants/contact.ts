@@ -27,3 +27,30 @@ export const WHATSAPP_URL = {
     "Olá! Gostaria de fazer um orçamento de pintura de borda.",
   ),
 } as const;
+
+export type ContactFields = {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+};
+
+/**
+ * O site é estático e não tem backend, então o formulário monta a mensagem e
+ * entrega no WhatsApp — que já é o canal de todos os outros CTAs. Para trocar
+ * por um envio de verdade, basta mexer no onSubmit do ContactForm: os campos
+ * já chegam prontos aqui.
+ */
+export function buildContactWhatsAppUrl(fields: ContactFields): string {
+  const message = [
+    "Olá! Vim pelo site.",
+    "",
+    `Nome: ${fields.name}`,
+    `E-mail: ${fields.email}`,
+    `Telefone: ${fields.phone}`,
+    "",
+    `Assunto: ${fields.subject}`,
+  ].join("\n");
+
+  return buildWhatsAppUrl(message);
+}

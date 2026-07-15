@@ -1,28 +1,20 @@
 import { ASSETS } from "@/constants/assets";
 
-/** Quantos slots a galeria tem. */
-const PLACEHOLDER_COUNT = 6;
-
 /**
- * PLACEHOLDER: a galeria alterna entre as duas fotos que já existem no
- * projeto — é o suficiente para dar pra perceber a troca ao passar. Substitua
- * por uma lista real; cada item só precisa de `id`, `src` e `alt`.
+ * As fotos da galeria, na ordem em que aparecem. O carrossel e o modal leem
+ * esta mesma lista, então a ordem daqui vale para os dois.
+ *
+ * Cada foto entra uma vez só: quem dá a volta sem emenda é o carrossel, que
+ * repete a lista internamente. Duplicar aqui faria a mesma foto aparecer duas
+ * vezes na mesma volta.
+ *
+ * O `id` é a chave de renderização — descreve a foto para quem lê o código, já
+ * que o caminho do arquivo só diz o número.
  */
-const PLACEHOLDER_PHOTOS = [
-  {
-    src: ASSETS.heroBackground.src,
-    // O alt de heroBackground é vazio de propósito: no banner ela é
-    // decorativa e some para o leitor de tela. Aqui a foto é o conteúdo, e
-    // conteúdo precisa de descrição própria.
-    alt: 'Exemplares do livro "O Hacker do Tempo" com as bordas das páginas pintadas de preto.',
-  },
-  {
-    src: ASSETS.product1.src,
-    alt: ASSETS.product1.alt,
-  },
+export const GALLERY = [
+  { id: "imperio-dos-ossos", ...ASSETS.product1 },
+  { id: "tipografia-matias", ...ASSETS.product2 },
+  { id: "gaburieru-brochura", ...ASSETS.product3 },
+  { id: "royal-gates", ...ASSETS.product4 },
+  { id: "hacker-do-tempo", ...ASSETS.product5 },
 ];
-
-export const GALLERY = Array.from({ length: PLACEHOLDER_COUNT }, (_, index) => ({
-  id: `pintura-${index + 1}`,
-  ...PLACEHOLDER_PHOTOS[index % PLACEHOLDER_PHOTOS.length],
-}));
