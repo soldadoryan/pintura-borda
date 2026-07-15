@@ -225,7 +225,7 @@ export function GallerySection() {
                   // O pointer vem da regra base: parada, a foto abre o modal, e
                   // é isso que ela anuncia. Quem assume durante o arrasto é a
                   // trilha, com o grabbing.
-                  className="relative block size-full overflow-hidden rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500"
+                  className="relative block size-full overflow-hidden rounded-photo focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500"
                 >
                   <Image
                     src={photo.src}

@@ -1,3 +1,4 @@
+import { AboutSection } from "@/components/sections/AboutSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { CustomizationSection } from "@/components/sections/CustomizationSection";
 import { GallerySection } from "@/components/sections/GallerySection";
@@ -7,6 +8,7 @@ export default function Home() {
   return (
     <main className="flex flex-1 flex-col">
       <HeroBanner />
+      <AboutSection />
       <CustomizationSection />
       <GallerySection />
       <ContactSection />

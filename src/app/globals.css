@@ -10,13 +10,36 @@
      responsivo: o ajuste vale só para as telas que não davam conta. O 2xl do
      Tailwind para em 1536px e não alcança essa faixa. */
   --breakpoint-3xl: 120rem;
+
+  /* O raio de toda foto do site, num lugar só. 5px não é degrau do Tailwind (o
+     rounded-sm é 4px e o rounded-md, 6px), e sair espalhando rounded-[5px]
+     deixaria cada seção livre pra inventar o seu de novo — que é exatamente o
+     que estava acontecendo. Como token do @theme ele vira `rounded-photo`, e
+     mudar o número aqui muda o site inteiro. */
+  --radius-photo: 5px;
 }
+
+/* 416px de altura. Os breakpoints do Tailwind medem largura, e o problema aqui
+   é a altura: celular deitado. Abaixo disso o banner não tem altura pra logo,
+   frase e indicador ao mesmo tempo — num iPhone SE deitado o indicador
+   atravessa a frase. */
+@custom-variant short (@media (height <= 26rem));
 
 /* Pinta o fundo já no primeiro paint: sem isso o branco padrão do
    navegador pisca antes do banner montar. */
 html,
 body {
   background-color: var(--color-gray-950);
+}
+
+/* O indicador do banner é uma âncora de verdade: sem isto o clique teleporta
+   a página pra seção seguinte e ninguém entende de onde saiu. Fica de fora do
+   reduce de propósito — rolagem animada é exatamente o movimento que incomoda
+   quem pediu menos dele. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Nem o navegador nem o preflight do Tailwind dão pointer ao <button> — o
@@ -96,6 +119,45 @@ body {
   animation: fade-out 500ms ease-in-out both;
 }
 
+/* O dedo descendo pela telinha: encosta, arrasta, solta, e espera antes de
+   recomeçar. As duas pontas ficam em opacity 0 justamente pra esconder o salto
+   de volta ao topo no fim de cada volta. O 1.25rem é o curso que sobra dentro
+   da moldura h-11 depois de descontar borda, padding e o próprio ponto. */
+@keyframes touch-hint {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(1.25rem);
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+/* Sem deslocamento, pro reduce: o aceno continua, o movimento sai. */
+@keyframes touch-hint-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@utility touch-hint {
+  animation: touch-hint 2200ms ease-in-out infinite;
+}
+
 @keyframes reveal {
   from {
     opacity: 0;
@@ -147,5 +209,10 @@ body {
 
   [data-revealed] .reveal {
     animation-name: fade-in;
+  }
+
+  /* Só o nome troca: duração, curva e o infinite continuam vindo da @utility. */
+  .touch-hint {
+    animation-name: touch-hint-pulse;
   }
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 
 import { Footer } from "@/components/ui/Footer";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { SITE } from "@/constants/site";
+import "react-toastify/ReactToastify.css";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -37,6 +39,13 @@ export default function RootLayout({
             perde o landmark de contentinfo e some da navegação por região. */}
         <Footer />
         <WhatsAppButton />
+        {/* No layout, e não dentro do formulário: o container é o lugar onde o
+            toast é desenhado, e ele precisa sobreviver ao reset do form. O
+            react-toastify já marca este componente como "use client", então o
+            layout continua sendo Server Component.
+            bottom-left pra não cair embaixo do botão do WhatsApp, que é fixed
+            no canto direito. */}
+        <ToastContainer position="bottom-left" theme="colored" />
       </body>
     </html>
   );

@@ -28,29 +28,8 @@ export const WHATSAPP_URL = {
   ),
 } as const;
 
-export type ContactFields = {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-};
-
-/**
- * O site é estático e não tem backend, então o formulário monta a mensagem e
- * entrega no WhatsApp — que já é o canal de todos os outros CTAs. Para trocar
- * por um envio de verdade, basta mexer no onSubmit do ContactForm: os campos
- * já chegam prontos aqui.
- */
-export function buildContactWhatsAppUrl(fields: ContactFields): string {
-  const message = [
-    "Olá! Vim pelo site.",
-    "",
-    `Nome: ${fields.name}`,
-    `E-mail: ${fields.email}`,
-    `Telefone: ${fields.phone}`,
-    "",
-    `Assunto: ${fields.subject}`,
-  ].join("\n");
-
-  return buildWhatsAppUrl(message);
-}
+// O buildContactWhatsAppUrl vivia aqui: o formulário montava a mensagem e
+// abria o WhatsApp, porque o site não tinha servidor. Agora ele manda e-mail
+// de verdade pela Server Action (src/app/actions.ts), e essa função ficou sem
+// ninguém chamando. O WhatsApp continua sendo o canal dos outros CTAs — o
+// botão flutuante e o "Faça seu orçamento" seguem usando o WHATSAPP_URL acima.

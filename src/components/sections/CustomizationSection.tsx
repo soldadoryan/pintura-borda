@@ -4,6 +4,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { ASSETS } from "@/constants/assets";
 import { WHATSAPP_URL } from "@/constants/contact";
 import { revealDelay } from "@/constants/reveal";
+import { SECTION_ID } from "@/constants/sections";
 
 const STEPS = [
   {
@@ -27,7 +28,10 @@ export function CustomizationSection() {
   return (
     // min-h, não h: o conteúdo é mais alto que a tela num celular pequeno, e
     // travar a altura cortaria o botão justo na seção que existe pra converter.
-    <section className="flex min-h-dvh w-full items-center bg-white py-20 sm:py-24">
+    <section
+      id={SECTION_ID.customization}
+      className="flex min-h-dvh w-full items-center bg-white py-20 sm:py-24"
+    >
       {/* O Reveal assume o lugar do container que já existia aqui: ele só
           precisa de um elemento pra observar, e reaproveitar este não mexe no
           layout nem acrescenta div nenhuma. */}
@@ -39,7 +43,7 @@ export function CustomizationSection() {
         <div className="reveal hidden 3xl:flex 3xl:justify-start">
           {/* A moldura é quem recorta e inclina: o next/image por dentro fica
               reto e o object-cover absorve o corte do 16:9 original. */}
-          <div className="relative aspect-square w-full max-w-md -rotate-3 overflow-hidden rounded-2xl border-8 border-gray-950 shadow-2xl shadow-gray-950/25">
+          <div className="relative aspect-square w-full max-w-md -rotate-3 overflow-hidden rounded-photo border-8 border-gray-950 shadow-2xl shadow-gray-950/25">
             <Image
               src={ASSETS.product1.src}
               alt={ASSETS.product1.alt}
