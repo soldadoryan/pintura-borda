@@ -13,14 +13,9 @@ const STEPS = [
       "Um código Pantone, a arte da capa ou só a ideia na cabeça. A partir daí a gente chega no tom.",
   },
   {
-    title: "Aprove a amostra",
-    description:
-      "Você recebe uma prova da cor aplicada no papel real antes da tiragem sair do lugar.",
-  },
-  {
     title: "Receba pronto",
     description:
-      "Com o tom aprovado, pintamos a tiragem inteira mantendo o mesmo padrão do primeiro ao último exemplar.",
+      "Pintamos a tiragem inteira mantendo o mesmo padrão do primeiro ao último exemplar.",
   },
 ] as const;
 
